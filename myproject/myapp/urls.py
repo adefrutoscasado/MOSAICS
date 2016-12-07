@@ -3,14 +3,7 @@
 #from . import views
 #
 #
-#urlpatterns = ('myproject.myapp.views', #REMOVED ¿?
-#    url(r'^list/$', 'list', name='list'),
-#    url(r'^configuration/$', 'configuration', name='configuration'),
-#    url(r'^givemepiece/$', 'givemepiece', name='givemepiece'),
-#    url(r'^sendpiece/$', 'sendpiece', name='sendpiece'),
-#    #url(r'^(?P<thread_id>[0-9]+)/$', views.thread, name='thread'),
-#    url(r'^(?P<thread_id>[0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM]+)/$', views.thread, name='thread'),
-#)
+
 
 from django.conf.urls import url
 from . import views as myapp_views

@@ -10,7 +10,7 @@
 	
 	  <nav class="nav-wrapper">
     <div class="nav-wrapper">
-      <a href="/proyect/list/" class="brand-logo" style="padding-left: 20px;">MOSAICS</a>
+      <a href="/project/list/" class="brand-logo" style="padding-left: 20px;">MOSAICS</a>
       <ul id="nav-mobile" class="right hide-on-med-and-down">
       </ul>
     </div>
@@ -190,7 +190,7 @@ margin-left: 100px;
             <ul>
                 {% for document in documents %}
 		<li><a href="{{ document.docfile.url }}">{{ document.docfile.name }}</a></li>
-		<a href="/proyect/{{ document.identifier }}">{{ document.identifier }}</a>
+		<a href="/project/{{ document.identifier }}">{{ document.identifier }}</a>
                 {% endfor %}
             </ul>
         {% else %}
@@ -218,7 +218,7 @@ margin-left: 100px;
               <p><!--Text of the card--></p>
             </div>
             <div class="card-action">
-              <a href="/proyect/{{ document.identifier }}">Go</a>
+              <a href="/project/{{ document.identifier }}">Go</a>
             </div>
           </div>
         </div>

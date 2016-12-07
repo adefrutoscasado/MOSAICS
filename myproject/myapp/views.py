@@ -126,7 +126,7 @@ def list(request):
 
         documents = Document.objects.filter(owner__exact=id_user) #primero leemos para eliminar viejos
 
-        for document in documents: #If the proyect was aborted while choosing the divs, it will be deleted
+        for document in documents: #If the project was aborted while choosing the divs, it will be deleted
             if document.divx is None:
                 identifier = document.identifier
                 document.delete()
@@ -206,7 +206,7 @@ def configuration(request):
     # Load documents for the list page
         documents = Document.objects.filter(id__exact=newdoc.id)
 
-    return redirect('/proyect/' + documentidentifier + '/')
+    return redirect('/project/' + documentidentifier + '/')
 
 def thread(request, thread_id): #si recibe el thread_id. se puede usar
     if ('user') in request.COOKIES:
@@ -373,7 +373,7 @@ def sendpiece(request): #AQUI SE RECIBEN Y SE GUARDAN LAS PIEZAS
                    return HttpResponse(template.render(context, request))
             else:
                 template = loader.get_template('infomessage.html')
-                context = {'message': 'You didnt request any piece in this proyect yet'}
+                context = {'message': 'You didnt request any piece in this project yet'}
                 return HttpResponse(template.render(context, request))
         else:
             template = loader.get_template('infomessage.html')
@@ -383,7 +383,7 @@ def sendpiece(request): #AQUI SE RECIBEN Y SE GUARDAN LAS PIEZAS
 
 def administrate(request):
         if request.method == 'POST':
-            liberate_list = request.POST.getlist('liberate') #identificador del proyecto que contiene la pieza
+            liberate_list = request.POST.getlist('liberate') #identificador del projecto que contiene la pieza
             accept_list = request.POST.getlist('accept')
             liberatefromaccepted_list = request.POST.getlist('liberatefromaccepted')
             reject_list = request.POST.getlist('reject')
