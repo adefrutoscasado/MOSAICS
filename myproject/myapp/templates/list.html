@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>MOSAICS</title>
+	
+	<!--Import materialize.css-->
+        <link type="text/css" rel="stylesheet" href="{% static 'materialize/bin/materialize.css' %}"  media="screen,projection"/>
+	
+	  <nav class="nav-wrapper">
+    <div class="nav-wrapper">
+      <a href="/proyect/list/" class="brand-logo" style="padding-left: 20px;">MOSAICS</a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+      </ul>
+    </div>
+  </nav>
+	
+	
+    </head>
+    
+        <style>
+    body {
+    background-color: rgb(252, 252, 252);
+    padding: 100px;
+    padding-top: 90px;
+    }
+    
+    .mosaicimage{
+    height: auto; 
+    width: auto; 
+    max-width: 500px; 
+    max-height: 500px;
+    }
+
+    .centered {
+    border: 0px solid black;
+    box-shadow: 0 0 1em rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: 0 0 1em rgba(0, 0, 0, 0.1);
+    -webkit-box-shadow: 0 0 1em rgba(0, 0, 0, 0.1);
+    background: white;
+    align: center;
+    width: 90%;
+    }
+    
+    h1, h3, h3, h4, h5, h6 {
+	font-weight: 300;
+    }
+    
+    h5 {
+	font-size: 14.5px !important;
+	font-weight: normal !important;
+    }
+    
+    .header {
+    	padding-left: 100px;
+    }
+    
+    #savechangesheader {
+	font-weight: 500;
+    }
+    
+    .theme-color {
+    background-color: #26a69a;
+    }
+
+    .theme-color:hover {
+    background-color: #2bbbad;
+    }
+    
+    #loading {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: auto;
+    height: auto;
+    -webkit-transform: translate(-50%,-50%);
+    -moz-transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+    -o-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+    }
+    
+    .md-48 {
+    font-size: 48px;
+    }
+    
+    .bordered td {
+	padding-top: 0px !important;
+	padding-bottom: 0px !important;
+    }
+    
+    a {
+        z-index:0 !important;
+    }
+    
+    .nav-wrapper {
+    position:fixed;
+    top:0;
+    right:0;
+    z-index:1;
+    }
+    
+    .bannediptable {
+    width:50%;
+    }
+    
+    .card-action {
+    background-color: white;
+    }
+    
+    .cardimage {
+    height: auto; 
+    width: auto; 
+    max-width: 430px; 
+    min-width: 430px; 
+    }
+    
+    .card.small {
+    width: 430px;
+    }
+    
+
+div.scrollmenu {
+    overflow: auto;
+}
+
+.card a {
+	color: #ffab40;
+
+}
+
+th {
+padding-bottom: 0px;
+}
+
+#id_captcha_1 {
+color: black;
+}
+
+ /* label focus color */
+   .input-field input[type=text]:focus + label {
+     color: #2bbbad;
+}
+/* label underline focus color */
+  .input-field input[type=text]:focus {
+     border-bottom: 1px solid #2bbbad;
+     box-shadow: 0 1px 0 0 #2bbbad;
+   }
+
+.input-field label {
+	color: #9e9e9e;
+	position: absolute;
+	top: 0rem;
+	left: 0.75rem;
+	font-size: 1rem;
+	cursor: text;
+	-webkit-transition: 0.2s ease-out;
+	-moz-transition: 0.2s ease-out;
+	-o-transition: 0.2s ease-out;
+	-ms-transition: 0.2s ease-out;
+	transition: 0.2s ease-out;
+}
+
+label {
+	margin-left: 100px;
+}
+
+    </style>
+    
+    <!--label.active {
+margin-top: 20px;
+}
+label {
+margin-top: 20px;
+margin-left: 100px;
+}-->
+    
+    
+    <body>
+    
+        {% block footer %}
+        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+        <script type="text/javascript" src="{% static 'materialize/bin/materialize.js' %}"></script>
+    {% endblock %}
+    
+    <h4 class="header">YOUR PROJECTS</h4>
+        <!-- List of uploaded documents --><!--
+        {% if documents %}
+            <ul>
+                {% for document in documents %}
+		<li><a href="{{ document.docfile.url }}">{{ document.docfile.name }}</a></li>
+		<a href="/proyect/{{ document.identifier }}">{{ document.identifier }}</a>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No documents.</p>
+        {% endif %}
+       -->
+
+
+        {% if documents %}
+	<div class="scrollmenu">
+	<table>
+		<tr>
+	
+            <ul>
+                {% for document in documents %}
+<th>
+      <div class="row">
+        <div class="col s12 m7">
+          <div class="card small">
+            <div class="{{ document.identifier }}">
+              <img class="cardimage" src="{{ document.mosaic.url }}">
+              <span class="card-title">{{ document.identifier }}</span>
+            </div>
+            <div class="card-content">
+              <p><!--Text of the card--></p>
+            </div>
+            <div class="card-action">
+              <a href="/proyect/{{ document.identifier }}">Go</a>
+            </div>
+          </div>
+        </div>
+      </div>
+</th>
+                {% endfor %}
+</tr>
+</table>
+</div>
+            </ul>
+        {% else %}
+            <p>No projects.</p>
+        {% endif %}
+
+    <h4 class="header" style="padding-top: 30px;">CREATE A NEW PROJECT</h4>
+        <!-- Upload form. Note enctype attribute! -->
+
+        <form action="{% url "list" %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <p>{{ form.non_field_errors }}</p>
+            <p>{{ form.docfile.label_tag }} {{ form.docfile.help_text }}</p>
+            <p>
+                {{ form.docfile.errors }}
+                {{ form.docfile }}
+		<br>
+	          <div class="input-field col s12 divcaptcha" style="white-space:nowrap; display:inline">
+                {{ form.captcha }}
+		<label for="id_captcha_1">Captcha</label>
+
+            </p>
+	    <div></div>
+	<a id="fakebutton1" class="btn waves-effect waves-light theme-color">Upload</a>
+            <p><input type="submit" value="Upload" id="fakebutton1receiver" style="display:none;"/></p>
+        </form>
+	</div>
+	
+    </body>
+
+<script type="text/javascript" >
+
+//$("#loading").hide();
+//function showloading() {
+//      $("#loading").show();
+//}
+
+$('input[type="checkbox"]').on('change', function() {
+    $('input[pattern="' + this.pattern + '"]').not(this).prop('checked', false);
+});
+
+$('input').addClass("btn theme-color");
+$('#id_captcha_1').removeClass('btn theme-color')
+$('#name').removeClass('btn theme-color')
+
+$(".captcha").css("margin-right", "20px"); 
+
+$("#id_captcha_1").css("width", "20em"); 
+
+$("#savechangesheader").click(function() {
+  $("#savechanges").click();
+});
+
+$("#fakebutton1").click(function() {
+  $("#fakebutton1receiver").click();
+});
+
+$("#fakebutton2").click(function() {
+  $("#fakebutton2receiver").click();
+});
+
+$("#fakebutton3").click(function() {
+  $("#fakebutton3receiver").click();
+});
+
+$("#fakebutton4").click(function() {
+  $("#fakebutton4receiver").click();
+});
+
+
+</script>
+
+</html>

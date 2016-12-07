@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+
+    <head>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-scrollTo/2.1.0/jquery.scrollTo.min.js"></script>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  
+	<meta charset="utf-8">
+	<meta name="og:image" content="{{ document.mosaic.url }}" />
+	<!--Import materialize.css-->
+        <link type="text/css" rel="stylesheet" href="{% static 'materialize/bin/materialize.css' %}"  media="screen,projection"/>
+        
+  <nav class="nav-wrapper">
+    <div class="nav-wrapper">
+      <a href="/proyect/list/" class="brand-logo" style="padding-left: 20px;">MOSAICS</a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+      </ul>
+    </div>
+  </nav>
+	
+	<title>MOSAICS</title>
+    </head>
+   
+    <style>
+    body {
+    background-color: rgb(252, 252, 252);
+    padding: 100px;
+    padding-top: 90px;
+    }
+    
+    .pieceimage{
+    height: auto; 
+    width: auto; 
+    max-width: 150px; 
+    max-height: 150px;
+    }
+    
+    .mosaicimage{
+    height: auto; 
+    width: auto; 
+    max-width: 500px; 
+    max-height: 500px;
+    }
+
+    .centered {
+    border: 0px solid black;
+    box-shadow: 0 0 1em rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: 0 0 1em rgba(0, 0, 0, 0.1);
+    -webkit-box-shadow: 0 0 1em rgba(0, 0, 0, 0.1);
+    background: white;
+    align: center;
+    width: 90%;
+    }
+    
+    h1, h3, h3, h4, h5, h6 {
+	font-weight: 300;
+    }
+    
+    h5 {
+	font-size: 14.5px !important;
+	font-weight: normal !important;
+    }
+    
+    .header {
+    	padding-left: 100px;
+    }
+
+    p {
+    text-align: center !important;
+    }
+    
+    #savechangesheader {
+	font-weight: 500;
+    }
+    
+    .theme-color {
+    background-color: #26a69a;
+    }
+
+    .theme-color:hover {
+    background-color: #2bbbad;
+    }
+    
+    #loading {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: auto;
+    height: auto;
+    -webkit-transform: translate(-50%,-50%);
+    -moz-transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+    -o-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+    }
+    
+    .md-48 {
+    font-size: 48px;
+    }
+    
+    .bordered td {
+	padding-top: 0px !important;
+	padding-bottom: 0px !important;
+    }
+    
+    a {
+        z-index:0 !important;
+    }
+    
+    .nav-wrapper {
+    position:fixed;
+    top:0;
+    right:0;
+    z-index:1;
+    }
+    
+    </style>
+   
+    <body>
+    
+    
+    
+
+    
+    <!--Import jQuery before materialize.js-->
+    {% block footer %}
+        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+        <script type="text/javascript" src="{% static 'materialize/bin/materialize.js' %}"></script>
+    {% endblock %}
+
+        <!-- List of uploaded documents -->
+<table>
+<td style="text-align:center">
+
+        {% if documents %}
+            <ul>
+                {% for document in documents %}
+		<a href="{{ document.mosaic.url }}"><img src="{{ document.mosaic.url }}" class="mosaicimage"/></a>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No documents.</p>
+        {% endif %}
+
+{% for document in documents %}
+
+{% load social_widgets %}
+
+{% social_widget_render "facebook/share_button.html" %}
+{% social_widget_render "twitter/share_button.html" %}
+{% social_widget_render "google/plus_share_button.html" %}
+
+{% endfor %}
+</td>
+<td>
+<table class="bordered">
+<tr>
+<td>
+<i class="material-icons md-48">file_download</i>
+</td>
+<td>
+	<form action="{% url "givemepiece" %}" method="post">
+		{% csrf_token %}
+		{% for document in documents %}
+		<h4>REQUEST A PIECE</h4>
+		    <blockquote>
+		    <span style="font-size: 20px;font-weight: 300;">You will receive a random piece.</span>
+		    </blockquote>
+                    <a id="fakebutton1" class="btn waves-effect waves-light theme-color">Give me a piece!</a>
+		    
+		<input type="hidden" id="id" type="integer" class="" name="id" value="{{ document.id }}" readonly>
+		{% endfor %}
+                <input type="submit" id="fakebutton1receiver" style="display:none;" value="Give me a piece!" />
+          </form>
+</td>
+</tr>
+<tr>
+<td>
+<i class="material-icons md-48">color_lens</i>
+</td>
+<td>
+	<h4>EDIT YOUR PIECE</h4>
+	    <blockquote>
+	    <span style="font-size: 20px;font-weight: 300;">Use your art skills to make an unique piece.</span>
+	    </blockquote>
+</td>
+<tr>
+</tr>
+<td>
+<i class="material-icons md-48">file_upload</i>
+</td>
+<td>
+	<h4>SEND YOUR PIECE</h4>
+	    <blockquote>
+	    <span style="font-size: 20px;font-weight: 300;">Once it is accepted, it will appear in the mosaic.</span>
+	    </blockquote>
+		    
+	<form action="{% url "sendpiece" %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+
+            {{ form.docfile.label_tag }}
+
+                {{ form.docfile.errors }}
+                {{ form.docfile }}
+
+	    
+	    {% for document in documents %}
+
+
+          
+            <input type="hidden" class="" id="identifier" type="integer" name="identifier" value="{{ document.identifier }}" readonly>
+
+	    
+	    
+	    {% endfor %}
+	    <br>
+<a id="fakebutton2" class="btn waves-effect waves-light theme-color" >Send piece!</a>
+<input type="submit" class="materializebutton" id="fakebutton2receiver" value="Send piece!" style="display:none;" />
+        </form>
+</td>
+</tr>
+</table>
+</td>
+</table>
+
+</body>
+
+    
+<!-- Script para el tema de los checkbox, para no poder marcar liberar y aceptar al mismo tiempo -->
+
+<script type="text/javascript" >
+
+//$("#loading").hide();
+//function showloading() {
+//      $("#loading").show();
+//}
+
+$('input').addClass("btn theme-color");
+
+$("#savechangesheader").click(function() {
+  $("#savechanges").click();
+});
+
+$("#fakebutton1").click(function() {
+  $("#fakebutton1receiver").click();
+});
+
+$("#fakebutton2").click(function() {
+  $("#fakebutton2receiver").click();
+});
+
+
+</script>
+
+</html>
+

@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>MOSAICS</title>
+	
+	<!--Import materialize.css-->
+        <link type="text/css" rel="stylesheet" href="{% static 'materialize/bin/materialize.css' %}"  media="screen,projection"/>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	
+	  <nav class="nav-wrapper">
+    <div class="nav-wrapper">
+      <a href="/proyect/list/" class="brand-logo" style="padding-left: 20px;">MOSAICS</a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+      </ul>
+    </div>
+  </nav>
+	
+	
+    </head>
+
+    <style>
+    body {
+    background-color: rgb(252, 252, 252);
+    padding: 100px;
+    padding-top: 90px;
+    }
+    
+    .pieceimage{
+    height: auto; 
+    width: auto; 
+    max-width: 150px; 
+    max-height: 150px;
+    }
+    
+    .mosaicimage{
+    height: auto; 
+    width: auto; 
+    max-width: 500px; 
+    max-height: 500px;
+    }
+
+    .centered {
+    border: 0px solid black;
+    box-shadow: 0 0 1em rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: 0 0 1em rgba(0, 0, 0, 0.1);
+    -webkit-box-shadow: 0 0 1em rgba(0, 0, 0, 0.1);
+    background: white;
+    align: center;
+    width: 90%;
+    }
+    
+    h1, h3, h3, h4, h5, h6 {
+	font-weight: 300;
+    }
+    
+    h5 {
+	font-size: 14.5px !important;
+	font-weight: normal !important;
+    }
+    
+    .header {
+    	padding-left: 100px;
+    }
+
+    p {
+    text-align: center !important;
+    }
+    
+    #savechangesheader {
+	font-weight: 500;
+    }
+    
+    .theme-color {
+    background-color: #26a69a;
+    }
+
+    .theme-color:hover {
+    background-color: #2bbbad;
+    }
+    
+    #loading {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: auto;
+    height: auto;
+    -webkit-transform: translate(-50%,-50%);
+    -moz-transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+    -o-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+    }
+    
+    .md-48 {
+    font-size: 48px;
+    }
+    
+    .bordered td {
+	padding-top: 0px !important;
+	padding-bottom: 0px !important;
+    }
+    
+    a {
+        z-index:0 !important;
+    }
+    
+    .nav-wrapper {
+    position:fixed;
+    top:0;
+    right:0;
+    z-index:1;
+    }
+    
+    input[type="range"]::-moz-range-thumb {
+	border: none;
+	height: 14px;
+	width: 14px;
+	border-radius: 50%;
+	background: #26a69a;
+	margin-top: -5px;
+    }
+    
+input[type="range"] + .thumb {
+	position: absolute;
+	border: none;
+	height: 0;
+	width: 0;
+	border-radius: 50%;
+	background-color: #26a69a;
+	top: 10px;
+	margin-left: -6px;
+	-webkit-transform-origin: 50% 50%;
+	-moz-transform-origin: 50% 50%;
+	-ms-transform-origin: 50% 50%;
+	-o-transform-origin: 50% 50%;
+	transform-origin: 50% 50%;
+	-webkit-transform: rotate(-45deg);
+	-moz-transform: rotate(-45deg);
+	-ms-transform: rotate(-45deg);
+	-o-transform: rotate(-45deg);
+	transform: rotate(-45deg);
+}
+    
+
+canvas {
+    Margin: 0 auto;
+    Vertical-align: middle;
+}
+
+    </style>
+
+
+    <body>
+    
+        <!--Import jQuery before materialize.js-->
+    {% block footer %}
+        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+        <script type="text/javascript" src="{% static 'materialize/bin/materialize.js' %}"></script>
+    {% endblock %}
+    
+    
+    
+    <table>
+<td style="text-align:center">
+        <!-- List of uploaded documents -->
+        {% if documents %}
+            <ul>
+		   <img class="mosaicimage" id="mosaicimage" src="{{ documents.docfile.url }}"> <!-- style="display:none;"> -->
+		   <input id="widthimage" value="{{ documents.image_width }}" style="display:none;"/>
+		   <input id="heightimage" value="{{ documents.image_height }}" style="display:none;"/>
+		   <canvas id="myCanvas" width="10" height="10"  style="display:none;" align="center"></canvas> 
+            </ul>
+        {% else %}
+            <p>No documents.</p>
+        {% endif %}
+
+</td>
+<td>
+<table>
+<tr>
+<td>
+<i class="material-icons md-48">content_cut</i>
+</td>
+<td>
+<div style="width:400px;">
+	<form action="{% url "configuration" %}" method="post">
+		{% csrf_token %}
+		<h4>CHOOSE DIVISIONS</h4>
+		    <blockquote>
+		    <span style="font-size: 20px;font-weight: 300;">Each person will receive a division</span>
+		    </blockquote>
+		<h4 style="font-size: 1.5rem;">COLUMNS</h4>
+                    <p class="range-field">
+                    <input type="range" id="divx" min="1" max="25" name="divx" value="1" oninput="updatedivisions()" />
+                    </p>
+		<h4 style="font-size: 1.5rem;">ROWS</h4>
+		<p class="range-field">
+                    <input type="range" id="divy" min="1" max="25" name="divy" value="1" oninput="updatedivisions()" />
+                    </p>
+		
+		<input type="hidden" id="id" type="integer" class="" name="id" value="{{ documents.id }}">
+		
+                    <a id="fakebutton1" class="btn waves-effect waves-light theme-color">Start project!</a>
+                <input type="submit" id="fakebutton1receiver" value="Submit" style="display:none;"/>
+          </form>
+</div>
+</td>
+</tr>
+        </form>
+</table>
+</td>
+</table>
+
+<div id="debug1"></div>
+<div id="debug2"></div>
+
+<div id="divxdebug"></div>
+<div id="divydebug"></div>
+
+    </body>
+
+<script type="text/javascript" >
+
+//$("#loading").hide();
+//function showloading() {
+//      $("#loading").show();
+//}
+
+$("#fakebutton1").click(function() {
+  $("#fakebutton1receiver").click();
+});
+
+
+var widthimage = document.getElementById('widthimage').value; 
+var heightimage = document.getElementById('heightimage').value; 
+
+ratio = widthimage/heightimage;
+
+if (widthimage > 500) {
+widthimage = 500;
+heightimage = 500/ratio;
+}
+
+if (heightimage > 500) {
+heightimage = 500;
+widthimage = 500*ratio;
+}
+
+//document.getElementById('debug1').innerHTML = widthimage;
+//document.getElementById('debug2').innerHTML = heightimage;
+
+document.getElementById('myCanvas').width  = widthimage;
+document.getElementById('myCanvas').height = heightimage;
+
+
+var c = document.getElementById("myCanvas");
+var ctx = c.getContext("2d");
+var img = document.getElementById("mosaicimage");
+ctx.drawImage(img,0,0, widthimage, heightimage);
+
+$( document ).ready(function() {
+var c = document.getElementById("myCanvas");
+var ctx = c.getContext("2d");
+var img = document.getElementById("mosaicimage");
+ctx.drawImage(img,0,0, widthimage, heightimage);
+});
+
+function updatedivisions(){
+	document.getElementById("myCanvas").style.display="block";
+	document.getElementById("mosaicimage").style.display="none";
+	
+	var c = document.getElementById("myCanvas");
+	var ctx = c.getContext("2d");
+	var img = document.getElementById("mosaicimage");
+	ctx.drawImage(img,0,0, widthimage, heightimage);
+
+	divx=document.getElementById("divx").value;
+	divy=document.getElementById("divy").value;
+	
+	//document.getElementById('divxdebug').innerHTML = divx;
+	//document.getElementById('divydebug').innerHTML = divy;
+
+	for (y=1; y < divy; y++) {
+	var c=document.getElementById("myCanvas");
+	var ctx=c.getContext("2d");
+	ctx.beginPath();
+
+	ctx.moveTo(0,(heightimage/divy)*y);
+	ctx.lineTo(widthimage,(heightimage/divy)*y);
+	
+	ctx.strokeStyle = '#fcfcfc';
+	ctx.stroke();
+	}
+	
+	for (x=1; x < divx; x++) {
+	var c=document.getElementById("myCanvas");
+	var ctx=c.getContext("2d");
+	ctx.beginPath();
+	
+	ctx.moveTo((widthimage/divx)*x,0);
+	ctx.lineTo((widthimage/divx)*x,heightimage);
+
+	ctx.strokeStyle = '#fcfcfc';
+	ctx.stroke();
+	
+	}
+	}
+
+
+</script>
+
+
+</html>

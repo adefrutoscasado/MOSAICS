@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+
+    <head>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-scrollTo/2.1.0/jquery.scrollTo.min.js"></script>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  
+	<meta charset="utf-8">
+	<meta name="og:image" content="{{ document.mosaic.url }}" />
+	<!--Import materialize.css-->
+        <link type="text/css" rel="stylesheet" href="{% static 'materialize/bin/materialize.css' %}"  media="screen,projection"/>
+        
+  <nav class="nav-wrapper">
+    <div class="nav-wrapper">
+      <a href="/proyect/list/" class="brand-logo" style="padding-left: 20px;">MOSAICS</a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <li><a href="#givenpieces" class="scrolltogivenpieces">Given pieces</a></li>
+        <li><a href="#submitedpieces" class="scrolltosubmitedpieces">Submited pieces</a></li>
+        <li><a href="#acceptedpieces" class="scrolltoacceptedpieces">Accepted pieces</a></li>
+        <li><a href="#acceptedpieces" class="scrolltobannedip">Banned IP</a></li>
+        <li><a id="savechangesheader" style="cursor:pointer;"><img><i class="material-icons left"></img>save</i>SAVE CHANGES</a></li>
+      </ul>
+    </div>
+  </nav>
+	
+	<title>MOSAICS</title>
+    </head>
+   
+    <style>
+    body {
+    background-color: rgb(252, 252, 252);
+    padding: 100px;
+    padding-top: 90px;
+    }
+    
+    .pieceimage{
+    height: auto; 
+    width: auto; 
+    max-width: 150px; 
+    max-height: 150px;
+    }
+    
+    .mosaicimage{
+    height: auto; 
+    width: auto; 
+    max-width: 500px; 
+    max-height: 500px;
+    }
+
+    .centered {
+    border: 0px solid black;
+    box-shadow: 0 0 1em rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: 0 0 1em rgba(0, 0, 0, 0.1);
+    -webkit-box-shadow: 0 0 1em rgba(0, 0, 0, 0.1);
+    background: white;
+    align: center;
+    width: 90%;
+    }
+    
+    h1, h3, h3, h4, h5, h6 {
+	font-weight: 300;
+    }
+    
+    h5 {
+	font-size: 14.5px !important;
+	font-weight: normal !important;
+    }
+    
+    .header {
+    	padding-left: 100px;
+    }
+
+    p {
+    text-align: center !important;
+    }
+    
+    #savechangesheader {
+	font-weight: 500;
+    }
+    
+    .theme-color {
+    background-color: #26a69a;
+    }
+
+    .theme-color:hover {
+    background-color: #2bbbad;
+    }
+    
+    #loading {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: auto;
+    height: auto;
+    -webkit-transform: translate(-50%,-50%);
+    -moz-transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+    -o-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+    }
+    
+    .md-48 {
+    font-size: 48px;
+    }
+    
+    .bordered td {
+	padding-top: 0px !important;
+	padding-bottom: 0px !important;
+    }
+    
+    a {
+        z-index:0 !important;;
+    }
+    
+    .nav-wrapper {
+    position:fixed;
+    top:0;
+    right:0;
+    z-index:1;
+    }
+    
+    .bannediptable {
+    width:50%;
+    }
+    
+    </style>
+   
+    <body>
+    
+    
+    
+
+    
+    <!--Import jQuery before materialize.js-->
+    {% block footer %}
+        <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+        <script type="text/javascript" src="{% static 'materialize/bin/materialize.js' %}"></script>
+    {% endblock %}
+
+        <!-- List of uploaded documents -->
+<table>
+<td style="text-align:center">
+
+        {% if documents %}
+            <ul>
+                {% for document in documents %}
+		<a href="{{ document.mosaic.url }}"><img src="{{ document.mosaic.url }}" class="mosaicimage"/></a>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No documents.</p>
+        {% endif %}
+
+{% for document in documents %}
+
+{% load social_widgets %}
+
+{% social_widget_render "facebook/share_button.html" %}
+{% social_widget_render "twitter/share_button.html" %}
+{% social_widget_render "google/plus_share_button.html" %}
+
+{% endfor %}
+</td>
+<td>
+<table class="bordered">
+<tr>
+<td>
+<i class="material-icons md-48">file_download</i>
+</td>
+<td>
+	<form action="{% url "givemepiece" %}" method="post">
+		{% csrf_token %}
+		{% for document in documents %}
+		<h4>REQUEST A PIECE</h4>
+		    <blockquote>
+		    <span style="font-size: 20px;font-weight: 300;">You will receive a random piece.</span>
+		    </blockquote>
+                    <a id="fakebutton1" class="btn waves-effect waves-light theme-color">Give me a piece!</a>
+		    
+		<input type="hidden" id="id" type="integer" class="" name="id" value="{{ document.id }}" readonly>
+		{% endfor %}
+                <input type="submit" id="fakebutton1receiver" style="display:none;" value="Give me a piece!" />
+          </form>
+</td>
+</tr>
+<tr>
+<td>
+<i class="material-icons md-48">color_lens</i>
+</td>
+<td>
+	<h4>EDIT YOUR PIECE</h4>
+	    <blockquote>
+	    <span style="font-size: 20px;font-weight: 300;">Use your art skills to make an unique piece.</span>
+	    </blockquote>
+</td>
+<tr>
+</tr>
+<td>
+<i class="material-icons md-48">file_upload</i>
+</td>
+<td>
+	<h4>SEND YOUR PIECE</h4>
+	    <blockquote>
+	    <span style="font-size: 20px;font-weight: 300;">Once it is accepted, it will appear in the mosaic.</span>
+	    </blockquote>
+		    
+	<form action="{% url "sendpiece" %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+
+      {{ form.docfile.label_tag }}
+
+                {{ form.docfile.errors }}
+                {{ form.docfile }}
+
+	    
+	    {% for document in documents %}
+	    
+
+          
+            <input type="hidden" class="" id="identifier" type="integer" name="identifier" value="{{ document.identifier }}" readonly>
+
+	    
+	    
+	    {% endfor %}
+	    <br>
+<a id="fakebutton2" class="btn waves-effect waves-light theme-color" >Send piece!</a>
+<input type="submit" class="materializebutton" id="fakebutton2receiver" value="Send piece!" style="display:none;" />
+        </form>
+</td>
+</tr>
+</table>
+</td>
+</table>
+
+
+
+<form action="{% url "administrate" %}" method="post">
+{% csrf_token %}
+
+    <h3 style="color:rgb(238, 110, 115);">ADMINISTRATOR</h4>
+    <blockquote>
+      <i class="material-icons" style="padding-right: 15px;padding-top: 0px;">visibility_off</i><span style="font-size: 20px;font-weight: 300;">Only you can see this.</span>
+    </blockquote>
+    <br />
+    <h4 class="header" id="givenpieces">GIVEN PIECES</h4>
+
+<table class="centered">
+<thead>
+	<tr>
+	    <th><h5>PIECE</h5></th>
+	    <th><h5>COLUMN</h5></th> 
+	    <th><h5>ROW</h5></th>
+	    <th><h5>GIVEN</h5></th>
+	    <th><h5>LIBERATE</h5></th>
+	    <th><h5>IP</h5></th>
+	    <th><h5>BAN IP AND LIBERATE</h5></th>
+	</tr>
+</thead>
+<tbody>
+	{% for piece in givenpieces %}
+	<tr>
+	    <td><a href="{{ piece.image.url }}"><img src="{{ piece.image.url }}" class="pieceimage"/></a></td>		
+	    <td><p>{{ piece.xposition }}</p></td> 
+	    <td><p>{{ piece.yposition }}</p></td>
+	    <td><p>{{ piece.given_date|timesince }} ago</p></td>
+	    <td><p><input type="checkbox" name="liberate"  id="{{ piece.identifier }}" value="{{ piece.identifier }}" pattern="{{ piece.identifier }}" ><label for="{{ piece.identifier }}"></label></p></td>
+	    <td><p>{{ piece.ip }} </p></td>
+	    <td><p><input type="checkbox" name="banipfromgiven" id="{{ piece.identifier }}2" value="{{ piece.identifier }}" pattern="{{ piece.identifier }}" ><label for="{{ piece.identifier }}2"></label></p></td>
+	</tr>
+	{% endfor %}
+{% if givenpieces|length == 0 %}
+	<tr>
+	    <td colspan="7" style="align:center; color:#9e9e9e">There are not given pieces.</td>
+	</tr> 
+{% endif %}
+</tbody>
+</table>
+
+      <br />
+    <h4 class="header" id="submitedpieces">SUBMITED PIECES</h4>
+<table class="centered">
+<thead>
+	<tr>
+	    <th><h5>PIECE</h5></th>
+	    <th><h5>COLUMN</h5></th> 
+	    <th><h5>ROW</h5></th>
+	    <th><h5>ACCEPT</h5></th>
+	    <th><h5>REJECT</h5></th>
+	    <th><h5>IP </h5></th>
+	    <th><h5>BAN IP AND LIBERATE</h5></th>
+	</tr>
+</thead>
+<tbody>
+	{% for piece in submitedpieces %}
+	<tr>
+	    <td><a href="{{ piece.image.url }}"><img src="{{ piece.image.url }}" class="pieceimage"/></a></td>
+	    <td>{{ piece.xposition }}</td> 
+	    <td>{{ piece.yposition }}</td>
+	    <div>
+	    <td><input type="checkbox" name="accept"  id="{{ piece.identifier }}" value="{{ piece.identifier }}" pattern="{{ piece.identifier }}" ><label for="{{ piece.identifier }}"></label></p></td>
+	    <td><input type="checkbox" name="reject"  id="{{ piece.identifier }}2" value="{{ piece.identifier }}" pattern="{{ piece.identifier }}" ><label for="{{ piece.identifier }}2"></label></p></td>
+	    <td>{{ piece.ip }} </td>
+	    <td><input type="checkbox" name="liberate"  id="{{ piece.identifier }}3" value="{{ piece.identifier }}" pattern="{{ piece.identifier }}" ><label for="{{ piece.identifier }}3"></label></p></td>
+	    </div>
+	</tr>
+	{% endfor %}
+{% if submitedpieces|length == 0 %}
+	<tr>
+	    <td colspan="7" style="align:center; color:#9e9e9e">There are not submited pieces.</td>
+	</tr> 
+{% endif %}
+</tbody>
+</table>
+<br />
+
+    <h4 class="header" id="acceptedpieces">ACCEPTED PIECES</h4>
+<table class="centered">
+<thead>
+	<tr>
+	    <th><h5>PIECE</h5></th>
+	    <th><h5>COLUMN</h5></th> 
+	    <th><h5>ROW</h5></th>
+	    <th><h5>LIBERATE AGAIN</h5></th>
+	    <th><h5>IP</h5></th>
+	</tr>
+<thead>
+<tbody>
+
+	{% for piece in acceptedpieces %}
+	<tr>
+	    <td><a href="{{ piece.image.url }}"><img src="{{ piece.image.url }}" class="pieceimage"/></a></td>
+	    <td>{{ piece.xposition }}</td> 
+	    <td>{{ piece.yposition }}</td>
+	    <td><input type="checkbox" name="liberatefromaccepted"  id="{{ piece.identifier }}" value="{{ piece.identifier }}" pattern="{{ piece.identifier }}" ><label for="{{ piece.identifier }}"></label></p></td>
+	    <td>{{ piece.ip }} </td>
+	</tr>
+	{% endfor %}
+
+{% if acceptedpieces|length == 0 %}
+	<tr>
+	    <td colspan="5" style="align:center; color:#9e9e9e">There are not accepted pieces.</td>
+	</tr> 
+{% endif %}
+
+</tbody>
+</table>
+<input type="submit" value="Save changes" id="savechanges" style="display:none;">
+
+<br />
+<!--
+</form>
+
+<br />
+<form action="{% url "administrate" %}" method="post">
+-->
+{% csrf_token %}
+    <h4 class="header" id="bannedip">BANNED IP </h4>
+<table class="centered bannediptable">
+<thead>
+	<tr>
+	    <th><h5>IP</h5></th>
+	    <th><h5>ALLOW AGAIN </h5></th>
+	</tr>
+</thead>
+<tbody>
+{% for banned in banneds %}
+	<tr>
+	    <td>{{ banned.ip }}</td>
+	    <td><input type="checkbox" name="allowagain"  id="{{ banned.identifier }}" value="{{ banned.identifier }}" pattern="{{ banned.identifier }}" ><label for="{{ banned.identifier }}"></label></p></td>
+	</tr> 
+{% endfor %}
+{% if banneds|length == 0 %}
+	<tr>
+	    <td colspan="2" style="align:center; color:#9e9e9e">There are not banned IPs.</td>
+	</tr> 
+{% endif %}
+</tbody>
+</table>
+
+	<a id="fakebutton3" class="btn waves-effect waves-light theme-color" style="display:none;">Allow again</a>
+	<input class="btn theme-color" id="fakebutton3receiver"  type="submit" value="Allow again" style="display:none;">
+</form>
+
+</body>
+
+    
+<!-- Script para el tema de los checkbox, para no poder marcar liberar y aceptar al mismo tiempo -->
+
+<script type="text/javascript" >
+
+//$("#loading").hide();
+//function showloading() {
+//      $("#loading").show();
+//}
+
+$('input[type="checkbox"]').on('change', function() {
+    $('input[pattern="' + this.pattern + '"]').not(this).prop('checked', false);
+});
+
+$('input').addClass("btn theme-color");
+
+$("#savechangesheader").click(function() {
+  $("#savechanges").click();
+});
+
+$("#fakebutton1").click(function() {
+  $("#fakebutton1receiver").click();
+});
+
+$("#fakebutton2").click(function() {
+  $("#fakebutton2receiver").click();
+});
+
+$("#fakebutton3").click(function() {
+  $("#fakebutton3receiver").click();
+});
+
+$("#fakebutton4").click(function() {
+  $("#fakebutton4receiver").click();
+});
+
+$(".scrolltogivenpieces").click(function() {
+    $('html, body').animate({scrollTop: $("#givenpieces").offset().top -80 }, 1000);
+    return false;
+});
+
+$(".scrolltosubmitedpieces").click(function() {
+    $('html, body').animate({scrollTop: $("#submitedpieces").offset().top -80 }, 1000);
+    return false;
+});
+
+$(".scrolltoacceptedpieces").click(function() {
+    $('html, body').animate({scrollTop: $("#acceptedpieces").offset().top -80 }, 1000);
+    return false;
+});
+
+$(".scrolltobannedip").click(function() {
+    $('html, body').animate({scrollTop: $("#bannedip").offset().top -80 }, 1000);
+    return false;
+});
+
+
+</script>
+
+</html>

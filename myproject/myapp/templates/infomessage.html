@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+
+    <head>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-scrollTo/2.1.0/jquery.scrollTo.min.js"></script>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  
+	<meta charset="utf-8">
+	<meta name="og:image" content="{{ document.mosaic.url }}" />
+	<!--Import materialize.css-->
+        <link type="text/css" rel="stylesheet" href="{% static 'materialize/bin/materialize.css' %}"  media="screen,projection"/>
+        
+  <nav class="nav-wrapper">
+    <div class="nav-wrapper">
+      <a href="/proyect/list/" class="brand-logo" style="padding-left: 20px;">MOSAICS</a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+      </ul>
+    </div>
+  </nav>
+	
+	<title>MOSAICS</title>
+    </head>
+   
+    <style>
+    body {
+    background-color: rgb(252, 252, 252);
+    padding: 100px;
+    padding-top: 200px;
+    }
+    
+    .pieceimage{
+    height: auto; 
+    width: auto; 
+    max-width: 150px; 
+    max-height: 150px;
+    }
+    
+    .mosaicimage{
+    height: auto; 
+    width: auto; 
+    max-width: 500px; 
+    max-height: 500px;
+    }
+
+    .centered {
+    border: 0px solid black;
+    box-shadow: 0 0 1em rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: 0 0 1em rgba(0, 0, 0, 0.1);
+    -webkit-box-shadow: 0 0 1em rgba(0, 0, 0, 0.1);
+    background: white;
+    align: center;
+    width: 90%;
+    }
+    
+    h1, h3, h3, h4, h5, h6 {
+	font-weight: 300;
+    }
+    
+    h5 {
+	font-size: 14.5px !important;
+	font-weight: normal !important;
+    }
+    
+    .header {
+    	padding-left: 100px;
+    }
+
+    p {
+    text-align: center !important;
+    }
+    
+    #savechangesheader {
+	font-weight: 500;
+    }
+    
+    .theme-color {
+    background-color: #26a69a;
+    }
+
+    .theme-color:hover {
+    background-color: #2bbbad;
+    }
+    
+    #loading {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: auto;
+    height: auto;
+    -webkit-transform: translate(-50%,-50%);
+    -moz-transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+    -o-transform: translate(-50%,-50%);
+    transform: translate(-50%,-50%);
+    }
+    
+    .md-48 {
+    font-size: 48px;
+    }
+    
+    .bordered td {
+	padding-top: 0px !important;
+	padding-bottom: 0px !important;
+    }
+    
+    a {
+        z-index:0 !important;
+    }
+    
+    .nav-wrapper {
+    position:fixed;
+    top:0;
+    right:0;
+    z-index:1;
+    }
+    
+    </style>
+   
+    <body>
+
+<div style="width:800px; heigth: 800px; margin:0 auto; text-align: center; vertical-align: middle;">
+<h3>{{message}}</h3>
+</div>
+
+</body>
+
+
+</html>
+
