@@ -1,1 +1,6 @@
-'*.sqlite3' 
+*.pyc
+__pycache__
+myvenv
+/media
+*.sqlite3
+.DS_StoreS
