@@ -153,10 +153,16 @@ def configuration(request):
         form = DocumentForm()  # A empty, unbound form
         id=request.POST.get('id')
         object = Document.objects.get(pk=id)
+        docidentifier = object.identifier
+
         divx = request.POST.get('divx')
-        object.divx = request.POST.get('divx')
         divy = request.POST.get('divy')
-        object.divy = request.POST.get('divy')
+
+        pieces = Piece.objects.filter(documentidentifier__exact=docidentifier) #Check if the pieces have been created before (if you go back from admin.html, and choose other division)
+        if len(pieces) > 0:
+            template = loader.get_template('infomessage.html')
+            context = {'message': 'You cannot change this configuration again'}
+            return HttpResponse(template.render(context, request))
         
         if int(divx) > 25:
             template = loader.get_template('infomessage.html')
@@ -174,6 +180,10 @@ def configuration(request):
             template = loader.get_template('infomessage.html')
             context = {'message': 'Divisions sould be between 1 and 25'}
             return HttpResponse(template.render(context, request))
+
+        object.divy = request.POST.get('divy')
+        object.divx = request.POST.get('divx')
+
 
         documentidentifier = object.identifier
         
