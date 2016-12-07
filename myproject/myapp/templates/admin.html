@@ -125,6 +125,15 @@
     width:50%;
     }
     
+    #block_container
+    {
+    text-align:center;
+    }
+    #bloc1, #bloc2
+    {
+    display:inline;
+    }
+    
     </style>
    
     <body>
@@ -235,17 +244,40 @@
 </td>
 </table>
 
-
-
-<form action="{% url "administrate" %}" method="post">
-{% csrf_token %}
-
-    <h3 style="color:rgb(238, 110, 115);">ADMINISTRATOR</h4>
+{% for document in documents %}
+<table>
+<tr>
+<td style="vertical-align:top">
+<div id="bloc1">
+    <h3 style="color:rgb(238, 110, 115);">ADMINISTRATOR</h3>
     <blockquote>
       <i class="material-icons" style="padding-right: 15px;padding-top: 0px;">visibility_off</i><span style="font-size: 20px;font-weight: 300;">Only you can see this.</span>
     </blockquote>
+    </div>
+</td>
+<td style="vertical-align:top">
+<div id="bloc2">
+    <h3 style="color:rgb(238, 110, 115);">SHARE</h3>
+    <blockquote>
+      <i class="material-icons" style="padding-right: 15px;padding-top: 0px;">share</i><span style="font-size: 20px;font-weight: 300;">Share the url with your friends so they can participate.</span>
+    </blockquote>
+    <blockquote style="border-left: 5px solid #26a69a;">
+    <span style="font-size: 20px;font-weight: 300;">http://adefrutoscasado.pythonanywhere.com/proyect/{{document.identifier}}/</span>
+    </blockquote>
+    </div>
+</td>
+</tr>
+</table> 
+{% endfor %}
+
+
+    
+<form action="{% url "administrate" %}" method="post">
+{% csrf_token %}
+    
     <br />
     <h4 class="header" id="givenpieces">GIVEN PIECES</h4>
+
 
 <table class="centered">
 <thead>
