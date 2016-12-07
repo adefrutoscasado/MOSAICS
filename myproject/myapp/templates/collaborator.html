@@ -10,8 +10,8 @@
 	<meta charset="utf-8">
 	{% for document in documents %}
 	<meta content="{{ document.mosaic.url }}" property="og:image"/>
-	<meta content="MOSAICS" property="og:title"/>
-	<meta content="A good page" property="og:description"/>
+	<meta content="TITLE" property="og:title"/>
+	<meta content="A description" property="og:description"/>
 	{% endfor %}
 	<!--Import materialize.css-->
         <link type="text/css" rel="stylesheet" href="{% static 'materialize/bin/materialize.css' %}"  media="screen,projection"/>
