@@ -12,4 +12,5 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^project/', include('myproject.myapp.urls')),
     url(r'^$', RedirectView.as_view(url='/project/list/', permanent=True)),
+    url(r'', RedirectView.as_view(url='/project/list/', permanent=True)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
