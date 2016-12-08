@@ -25,7 +25,7 @@ from io import BytesIO
 from django.core.files.uploadedfile import InMemoryUploadedFile
 
 from PIL import Image
-#from settings import PROJECT_ROOT #to import "os"
+#from settings import project_ROOT #to import "os"
 import os
 
 from django.core.urlresolvers import resolve
@@ -135,6 +135,8 @@ def list(request):
                 Banneds_oldest_documents = Banned.objects.filter(documentidentifier__exact = identifier)
                 Banneds_oldest_documents.delete()
 
+        #return HttpResponse("he entrado donde deberia eliminar las cosas")
+
         documents = Document.objects.filter(owner__exact=id_user) #segunda vez que leemos, esta vez para mostrar
         
         template = loader.get_template('list.html')
@@ -153,16 +155,16 @@ def configuration(request):
         form = DocumentForm()  # A empty, unbound form
         id=request.POST.get('id')
         object = Document.objects.get(pk=id)
-        docidentifier = object.identifier
+        #docidentifier = Document.objects.get(pk=id)
 
         divx = request.POST.get('divx')
         divy = request.POST.get('divy')
 
-        pieces = Piece.objects.filter(documentidentifier__exact=docidentifier) #Check if the pieces have been created before (if you go back from admin.html, and choose other division)
-        if len(pieces) > 0:
-            template = loader.get_template('infomessage.html')
-            context = {'message': 'You cannot change this configuration again'}
-            return HttpResponse(template.render(context, request))
+        #pieces = Piece.objects.filter(documentidentifier__exact=docidentifier) #Check if the pieces have been created before (if you go back from admin.html, and choose other division)
+        #if len(pieces) > 0:
+        #    template = loader.get_template('infomessage.html')
+        #    context = {'message': 'You cannot change this configuration again'}
+        #    return HttpResponse(template.render(context, request))
         
         if int(divx) > 25:
             template = loader.get_template('infomessage.html')
