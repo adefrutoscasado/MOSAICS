@@ -160,11 +160,11 @@ def configuration(request):
         divx = request.POST.get('divx')
         divy = request.POST.get('divy')
 
-        #pieces = Piece.objects.filter(documentidentifier__exact=docidentifier) #Check if the pieces have been created before (if you go back from admin.html, and choose other division)
-        #if len(pieces) > 0:
-        #    template = loader.get_template('infomessage.html')
-        #    context = {'message': 'You cannot change this configuration again'}
-        #    return HttpResponse(template.render(context, request))
+        pieces = Piece.objects.filter(documentidentifier__exact=object.identifier) #Check if the pieces have been created before (if you go back from admin.html, and choose other division)
+        if len(pieces) > 0:
+            template = loader.get_template('infomessage.html')
+            context = {'message': 'You cannot change this configuration again'}
+            return HttpResponse(template.render(context, request))
         
         if int(divx) > 25:
             template = loader.get_template('infomessage.html')
