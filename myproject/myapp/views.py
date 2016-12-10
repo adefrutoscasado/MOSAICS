@@ -34,6 +34,7 @@ from myproject.myapp.forms import DocumentForm
 
 from django.conf import settings 
 
+
 def folder_size():
     cmd = ["du", "-sh", "-b", "/home/adefrutoscasado/MOSAICS/media"]
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
@@ -56,7 +57,7 @@ def check_limit_storage():
         check_limit_storage() #we call the function until we use only 400 mb
     return None;
 
-def list(request):
+def listofprojects(request):
     # Handle file upload
     if request.method == 'POST':
         form = DocumentForm(request.POST, request.FILES)
@@ -161,7 +162,8 @@ def configuration(request):
         divy = request.POST.get('divy')
 
         pieces = Piece.objects.filter(documentidentifier__exact=object.identifier) #Check if the pieces have been created before (if you go back from admin.html, and choose other division)
-        if len(pieces) > 0:
+
+        if object.divx != None:
             template = loader.get_template('infomessage.html')
             context = {'message': 'You cannot change this configuration again'}
             return HttpResponse(template.render(context, request))
@@ -193,14 +195,15 @@ def configuration(request):
         documents = Document.objects.filter(id__exact=id)
         
         #creamos los modelos que usaremos para las piezas
-        for i in range(int(divx)):
-                for j in range(int(divy)):
-                        newpiece = Piece()
-                        newpiece.xposition = i
-                        newpiece.yposition = j
-                        newpiece.documentidentifier = documentidentifier
-                        newpiece.identifier = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(15)) #we add the identifier
-                        newpiece.save()
+
+        #for i in range(int(divx)):
+        #        for j in range(int(divy)):
+        #                newpiece = Piece()
+        #                newpiece.xposition = i
+        #                newpiece.yposition = j
+        #                newpiece.documentidentifier = documentidentifier
+        #                newpiece.identifier = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(15)) #we add the identifier
+        #                newpiece.save()
 
     else:
         form = DocumentForm()  # A empty, unbound form
@@ -231,7 +234,7 @@ def thread(request, thread_id): #si recibe el thread_id. se puede usar
             response['Expires'] = 'Fri, 01 Jan 2010 00:00:00 GMT'
             return response
         
-        else:
+        else: # no es admin, pero si tiene cookie 
             
             documents = Document.objects.filter(identifier__exact=thread_id)
             
@@ -247,6 +250,25 @@ def thread(request, thread_id): #si recibe el thread_id. se puede usar
                 response['Cache-Control'] = 'no-cache, no-store, max-age=0, must-revalidate' 
                 response['Expires'] = 'Fri, 01 Jan 2010 00:00:00 GMT'
                 return response
+
+    else: # no tiene cookie, le damos una
+        documents = Document.objects.filter(identifier__exact=thread_id)
+        if len(documents) == 0:
+            template = loader.get_template('infomessage.html')
+            context = {'message': 'This mosaic doesnt exist!'}
+            return HttpResponse(template.render(context, request))
+        else:
+            form = DocumentForm()
+            template = loader.get_template('collaborator.html')
+            context = {'documents': documents, 'form': form}
+            response = HttpResponse(template.render(context, request))
+            response['Cache-Control'] = 'no-cache, no-store, max-age=0, must-revalidate' 
+            response['Expires'] = 'Fri, 01 Jan 2010 00:00:00 GMT'
+            id_user =  ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(30))
+            response.set_cookie(key='user', value=id_user, max_age=63072000)
+            return response
+             #insertar cookie tambiennnnnnnnnnnnnnnn
+
 
 def givemepiece(request):
 
@@ -267,20 +289,28 @@ def givemepiece(request):
         divy = int(object.divy)
         
 
-        location = newrandomfindfreepiece(object.identifier, request.COOKIES['user'])
-        
+        #location = newrandomfindfreepiece(object.identifier, request.COOKIES['user'])
+        location = ultimaterandomfindfreepiece(object.identifier, request.COOKIES['user'], divx, divy)
+
         if location[0] == "null":
             template = loader.get_template('infomessage.html')
-            context = {'message': 'There is not available pieces in this project'}
+            context = {'message': 'There are not available pieces in this project'}
             return HttpResponse(template.render(context, request))
 
         x = str(location[0])
         y = str(location[1])
+        alreadygiven = location[2]
         
-        pieces = Piece.objects.filter(documentidentifier__exact=object.identifier).filter(xposition__exact=x).filter(yposition__exact=y)
-        piece = pieces[0]
-        piece.state = 'given'
-        piece.owner = request.COOKIES['user'] #we add the identifier
+        #pieces = Piece.objects.filter(documentidentifier__exact=object.identifier).filter(xposition__exact=x).filter(yposition__exact=y)
+        #piece = pieces[0]
+        if alreadygiven == False:
+            piece = Piece()
+            piece.documentidentifier = object.identifier
+            piece.identifier = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(15)) #we add the identifier
+            piece.xposition = int(x)
+            piece.yposition = int(y)
+            piece.state = 'given'
+            piece.owner = request.COOKIES['user'] #we add the identifier
         
         #check_limit_storage() #comprobar que hay espacio
         
@@ -294,23 +324,23 @@ def givemepiece(request):
         porcionx = tamanox/float(divx) #no se si dara problemas con generar floats
         porciony = tamanoy/float(divy)
         
-        x = int(x)
-        y = int(y)
+        x = int(x)-1
+        y = int(y)-1
         
         left = int(x*porcionx)
         top = int(y*porciony)
         right = int((x+1)*porcionx)
         bottom = int((y+1)*porciony)
-        
-        piece.xpixelposition = left
-        piece.ypixelposition = top
-        
+
         cropped_image = im.crop( (left, top, right, bottom) )
         sizes = cropped_image.size
         
-        piece.width = sizes[0]
-        piece.height = sizes[1]
-        piece.save()
+        if alreadygiven == False:
+            piece.xpixelposition = left
+            piece.ypixelposition = top
+            piece.width = sizes[0]
+            piece.height = sizes[1]
+  
         
         nameofthefile= 'filename="Column'+str(x+1)+'of'+str(int(divx)) + '-Row'+str(y+1)+'of'+str(int(divy))+ '.jpg"'
         
@@ -322,10 +352,12 @@ def givemepiece(request):
         tempfile_io =BytesIO()
         cropped_image.save(tempfile_io, "JPEG")
         image_file = InMemoryUploadedFile(tempfile_io, None, 'piecetemp.jpg','image/jpeg',sys.getsizeof(tempfile_io), None)
-        piece.image = image_file
-        piece.given_date = timezone.now()
-        piece.ip = get_ip(request)
-        piece.save()
+        
+        if alreadygiven == False:
+            piece.image = image_file
+            piece.given_date = timezone.now()
+            piece.ip = get_ip(request)
+            piece.save()
         
 
         return response
@@ -394,19 +426,12 @@ def administrate(request):
             allowagain_list =  request.POST.getlist('allowagain')
             
             for piece_id in liberate_list:
-                updatepiece = Piece.objects.get(identifier__exact=piece_id)
-                updatepiece.state = "null"
-                updatepiece.owner = "null"
-                #updatepiece.submit_date = "null"
-                updatepiece.save()
+                piece = Piece.objects.get(identifier__exact=piece_id)
+                piece.delete()
 
             for piece_id in liberatefromaccepted_list:
-                updatepiece = Piece.objects.get(identifier__exact=piece_id)
-                updatepiece.state = "null"
-                updatepiece.owner = "null"
-                #updatepiece.submit_date = "null"
-                updatepiece.save()
-                updatemosaic(updatepiece.documentidentifier)
+                piece = Piece.objects.get(identifier__exact=piece_id)
+                piece.delete()
 
             for piece_id in accept_list:
                 updatepiece = Piece.objects.get(identifier__exact=piece_id)
@@ -415,52 +440,38 @@ def administrate(request):
                 #updatemosaic(updatepiece.documentidentifier)
 
             for piece_id in reject_list:
-                updatepiece = Piece.objects.get(identifier__exact=piece_id)
-                updatepiece.state = "null"
-                updatepiece.owner = "null"
-                #updatepiece.submit_date = "null"
-                updatepiece.save()
+                piece = Piece.objects.get(identifier__exact=piece_id)
+                piece.delete()
 
             for piece_id in banipfromsubmited_list:
-                updatepiece = Piece.objects.get(identifier__exact=piece_id)
+                piece = Piece.objects.get(identifier__exact=piece_id)
                 
-                if len(Banned.objects.filter(ip__exact=updatepiece.ip).filter(documentidentifier__exact=updatepiece.documentidentifier)) > 0: # si ya esta baneado(el usuario ha seleccionado banear varias veces)solo liberamos
-                    updatepiece.state = "null"
-                    updatepiece.owner = "null"
-                    #updatepiece.submit_date = "null"
-                    updatepiece.save()
+                if len(Banned.objects.filter(ip__exact=piece.ip).filter(documentidentifier__exact=piece.documentidentifier)) > 0: # si ya esta baneado(el usuario ha seleccionado banear varias veces)solo liberamos
+                    piece = Piece.objects.get(identifier__exact=piece_id)
+                    piece.delete()
                 else:
-                    newbanned = Banned(ip=updatepiece.ip, documentidentifier=updatepiece.documentidentifier)
+                    newbanned = Banned(ip=piece.ip, documentidentifier=piece.documentidentifier)
                     newbanned.identifier = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(15))
                     newbanned.save()
-                    updatepiece.state = "null"
-                    updatepiece.owner = "null"
-                    #updatepiece.submit_date = "null"
-                    updatepiece.save()
+                    piece.delete()
 
             for piece_id in banipfromgiven_list:
-                updatepiece = Piece.objects.get(identifier__exact=piece_id)
+                piece = Piece.objects.get(identifier__exact=piece_id)
                 
-                if len(Banned.objects.filter(ip__exact=updatepiece.ip).filter(documentidentifier__exact=updatepiece.documentidentifier)) > 0: # si ya esta baneado(el usuario ha seleccionado banear varias veces)solo liberamos
-                    updatepiece.state = "null"
-                    updatepiece.owner = "null"
-                    #updatepiece.submit_date = "null"
-                    updatepiece.save()
+                if len(Banned.objects.filter(ip__exact=piece.ip).filter(documentidentifier__exact=piece.documentidentifier)) > 0: # si ya esta baneado(el usuario ha seleccionado banear varias veces)solo liberamos
+                    piece.delete()
                 else:
-                    newbanned = Banned(ip=updatepiece.ip, documentidentifier=updatepiece.documentidentifier)
+                    newbanned = Banned(ip=piece.ip, documentidentifier=piece.documentidentifier)
                     newbanned.identifier = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.ascii_lowercase + string.digits) for _ in range(15))
                     newbanned.save()
-                    updatepiece.state = "null"
-                    updatepiece.owner = "null"
-                    #updatepiece.submit_date = "null"
-                    updatepiece.save()
+                    piece.delete()
 
             for allowagain in allowagain_list:
                 allowagain = Banned.objects.get(identifier__exact=allowagain)
                 allowagain.delete()
 
-            if len(accept_list)>0: #hemos pasado a actualizar el mosaico aqui, de manera que se optimice. se actualizara una vez con todas las piezas, en vez de una actualizacion por pieza
-                updatemosaic(updatepiece.documentidentifier)
+            if len(accept_list)>0: #Si se ha aceptado alguna pieza, significa que hay nuevas piezas para nuestro mosaico, por lo tanto lo actualizamos
+                updatemosaic(piece.documentidentifier)
             
             template = loader.get_template('infomessage.html')
             context = {'message': 'Changes saved!'}
@@ -476,6 +487,7 @@ def newrandomfindfreepiece(docidentifier, user): #la posicion primera la devuelv
 	if len(piece_already_given) > 0:
 	    x = piece_already_given[0].xposition
 	    y = piece_already_given[0].yposition
+
 	else:
 	    pieces_free = pieces.filter(state__exact='null')
 	    if len(pieces_free) > 0:
@@ -484,6 +496,36 @@ def newrandomfindfreepiece(docidentifier, user): #la posicion primera la devuelv
 	        y = pieces_free[randomnumber].yposition
 
 	return (x,y)
+
+
+
+def ultimaterandomfindfreepiece(docidentifier, user, divx, divy): #la posicion primera la devuelve como 0,0 
+	x = "null"
+	y = "null"
+	alreadygiven = False
+	pieces = Piece.objects.filter(documentidentifier__exact=docidentifier)#encuentra las piezas que existen, es decir, que se han dado previamente
+	piece_already_given = pieces.filter(owner__exact=user)
+	if len(piece_already_given) > 0:
+	    x = piece_already_given[0].xposition
+	    y = piece_already_given[0].yposition
+	    alreadygiven = True
+	else:
+
+	    xavailable = list(range(1, divx+1)) #list from 1 to divx
+	    yavailable = list(range(1, divy+1)) #list from 1 to divy
+	    
+	    for piece in pieces:
+	        xavailable.remove(piece.xposition) #we remove the position that have been already given
+	        yavailable.remove(piece.yposition) #we remove the position that have been already given
+
+	    if len(xavailable) > 0:
+	        randomnumberx = randint(0,len(xavailable)-1)
+	        randomnumbery = randint(0,len(yavailable)-1)
+	        x = xavailable[randomnumberx]
+	        y = yavailable[randomnumbery]
+	        
+	    
+	return (x,y,alreadygiven)
 
 
 
