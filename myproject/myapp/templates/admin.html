@@ -166,9 +166,19 @@
 
 {% load social_widgets %}
 
+<table style="height: 59px;">
+<tr>
+<th style="text-align: right; vertical-align: top;">
 {% social_widget_render "facebook/share_button.html" %}
+</th>
+<th style="text-align: center; vertical-align: bottom; width: 70px;">
 {% social_widget_render "twitter/share_button.html" %}
+</th>
+<th style="text-align: left; vertical-align: bottom;">
 {% social_widget_render "google/plus_share_button.html" %}
+</th>
+</tr>
+</table>
 
 {% endfor %}
 </td>
@@ -451,22 +461,22 @@ $("#fakebutton4").click(function() {
 });
 
 $(".scrolltogivenpieces").click(function() {
-    $('html, body').animate({scrollTop: $("#givenpieces").offset().top -80 }, 1000);
+    $('html, body').animate({scrollTop: $("#givenpieces").offset().top -80 }, 500);
     return false;
 });
 
 $(".scrolltosubmitedpieces").click(function() {
-    $('html, body').animate({scrollTop: $("#submitedpieces").offset().top -80 }, 1000);
+    $('html, body').animate({scrollTop: $("#submitedpieces").offset().top -80 }, 500);
     return false;
 });
 
 $(".scrolltoacceptedpieces").click(function() {
-    $('html, body').animate({scrollTop: $("#acceptedpieces").offset().top -80 }, 1000);
+    $('html, body').animate({scrollTop: $("#acceptedpieces").offset().top -80 }, 500);
     return false;
 });
 
 $(".scrolltobannedip").click(function() {
-    $('html, body').animate({scrollTop: $("#bannedip").offset().top -80 }, 1000);
+    $('html, body').animate({scrollTop: $("#bannedip").offset().top -80 }, 500);
     return false;
 });
 

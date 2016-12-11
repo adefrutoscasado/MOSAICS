@@ -10,8 +10,8 @@
 	<meta charset="utf-8">
 	{% for document in documents %}
 	<meta content="{{ document.mosaic.url }}" property="og:image"/>
-	<meta content="TITLE" property="og:title"/>
-	<meta content="A description" property="og:description"/>
+	<meta content="MOSAICS" property="og:title"/>
+	<meta content="Request a piece. Edit your piece. Send your piece." property="og:description"/>
 	{% endfor %}
 	<!--Import materialize.css-->
         <link type="text/css" rel="stylesheet" href="{% static 'materialize/bin/materialize.css' %}"  media="screen,projection"/>
@@ -152,11 +152,22 @@
 
 {% load social_widgets %}
 
+<table style="height: 59px;">
+<tr>
+<th style="text-align: right; vertical-align: top;">
 {% social_widget_render "facebook/share_button.html" %}
+</th>
+<th style="text-align: center; vertical-align: bottom; width: 70px;">
 {% social_widget_render "twitter/share_button.html" %}
+</th>
+<th style="text-align: left; vertical-align: bottom;">
 {% social_widget_render "google/plus_share_button.html" %}
+</th>
+</tr>
+</table>
 
 {% endfor %}
+
 </td>
 <td>
 <table class="bordered">
