@@ -8,11 +8,11 @@
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   
 	<meta charset="utf-8">
-	{% for document in documents %}
-	<meta content="{{ document.mosaic.url }}" property="og:image"/>
+
+	<!--<meta content="{{ document.mosaic.url }}" property="og:image"/>-->
 	<meta content="MOSAICS" property="og:title"/>
 	<meta content="Request a piece. Edit your piece. Send your piece." property="og:description"/>
-	{% endfor %}
+
 	<!--Import materialize.css-->
         <link type="text/css" rel="stylesheet" href="{% static 'materialize/bin/materialize.css' %}"  media="screen,projection"/>
         
