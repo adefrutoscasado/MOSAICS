@@ -35,12 +35,24 @@ from myproject.myapp.forms import DocumentForm
 from django.conf import settings 
 
 
-def folder_size():
+def folder_size_cmd():
     cmd = ["du", "-sh", "-b", "/home/adefrutoscasado/MOSAICS/media"]
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
     total = str(proc.stdout.read())
     total = re.findall('\d+', total)[0]
     return total
+
+
+def folder_size():
+    total = 0
+    path = "/home/adefrutoscasado/MOSAICS/media"
+    for entry in os.scandir(path):
+        if entry.is_file():
+            total += entry.stat().st_size
+        elif entry.is_dir():
+            total += folder_size(entry.path)
+    return total
+
 
 def check_limit_storage():
     limit_to_start_removing = 15151906 #around 3 mb, debug
@@ -140,8 +152,17 @@ def listofprojects(request):
 
         documents = Document.objects.filter(owner__exact=id_user) #segunda vez que leemos, esta vez para mostrar
         
+        pieces = Piece.objects.filter(owner__exact=id_user)
+        
+        documentsparticipate = []
+        for piece in pieces:
+            Documentofpiece = Document.objects.filter(identifier__exact=piece.documentidentifier)
+            if Documentofpiece[0].owner != piece.owner:
+                documentsparticipate.extend(Document.objects.filter(identifier__exact=piece.documentidentifier))
+
+
         template = loader.get_template('list.html')
-        context = {'documents': documents, 'form': form}
+        context = {'documents': documents, 'form': form, 'documentsparticipate': documentsparticipate}
 
         response = HttpResponse(template.render(context, request))
         if known_user == "false":

@@ -59,6 +59,7 @@
     background: white;
     align: center;
     width: 90%;
+    overflow: auto;
     }
     
     h1, h3, h3, h4, h5, h6 {
@@ -387,7 +388,7 @@
 
 </tbody>
 </table>
-<input type="submit" value="Save changes" id="savechanges" style="display:none;">
+
 
 <br />
 <!--
@@ -422,6 +423,7 @@
 
 	<a id="fakebutton3" class="btn waves-effect waves-light theme-color" style="display:none;">Allow again</a>
 	<input class="btn theme-color" id="fakebutton3receiver"  type="submit" value="Allow again" style="display:none;">
+	<input type="submit" value="Save changes" id="savechanges" style="display:none;">
 </form>
 
 </body>
@@ -439,6 +441,10 @@
 $('input[type="checkbox"]').on('change', function() {
     $('input[pattern="' + this.pattern + '"]').not(this).prop('checked', false);
 });
+
+if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+$("#savechanges").css("display", "block");
+}
 
 $('input').addClass("btn theme-color");
 
