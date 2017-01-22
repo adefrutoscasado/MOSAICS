@@ -29,11 +29,12 @@ from PIL import Image
 import os
 
 from django.core.urlresolvers import resolve
-from myproject.myapp.models import Document, Piece, Banned
+from myproject.myapp.models import Document, Piece, Banned, Deletion
 from myproject.myapp.forms import DocumentForm
 
 from django.conf import settings 
-
+import datetime
+from django.db import models
 
 def folder_size_cmd():
     cmd = ["du", "-sh", "-b", "/home/adefrutoscasado/MOSAICS/media"]
@@ -42,10 +43,40 @@ def folder_size_cmd():
     total = re.findall('\d+', total)[0]
     return total
 
+    
+def registerdeletion(documenttodelete):
+    deletion = Deletion()
+    deletion.identifier = documenttodelete.identifier
+    deletion.owner = documenttodelete.owner
+    deletion.created_date = documenttodelete.created_date
+    deletion.deletion_date = timezone.now()
+    
+    deletion.time_of_life = deletion.deletion_date - deletion.created_date 
+    
+    pieces = Piece.objects.filter(documentidentifier__exact = documenttodelete.identifier)
+    
+    number_of_pieces = str(int(documenttodelete.divx) * int(documenttodelete.divy))
+    
+    deletion.number_of_pieces = number_of_pieces
 
-def folder_size():
+    number_of_pieces_in_db = len(pieces)
+
+    number_of_given = len(pieces.filter(state__exact = "given"))
+    number_of_submited = len(pieces.filter(state__exact = "submited"))
+    number_of_accepted = len(pieces.filter(state__exact = "accepted"))
+    
+    deletion.pieces_given = int(number_of_given)/int(number_of_pieces)
+    deletion.pieces_submited = int(number_of_submited)/int(number_of_pieces)
+    deletion.pieces_accepted = int(number_of_accepted)/int(number_of_pieces)
+    deletion.pieces_unused = (int(number_of_pieces) - int(number_of_pieces_in_db)) / int(number_of_pieces)
+    
+    deletion.save()
+    
+    return None
+    
+
+def folder_size(path):
     total = 0
-    path = "/home/adefrutoscasado/MOSAICS/media"
     for entry in os.scandir(path):
         if entry.is_file():
             total += entry.stat().st_size
@@ -55,12 +86,17 @@ def folder_size():
 
 
 def check_limit_storage():
-    limit_to_start_removing = 15151906 #around 3 mb, debug
+    limit_to_start_removing = 2097152 #around 2 mb, debug
     #limit_to_start_removing = 419430400 #400 mb
-    used_storage = folder_size()
+    
+    #path = "/home/adefrutoscasado/MOSAICS/media" #para Linux/web
+    path = "media" #para local
+    
+    used_storage = folder_size(path)
     if int(str(used_storage)) > int(str(limit_to_start_removing)):
         Oldest_document = Document.objects.earliest('created_date')
         identifier = Oldest_document.identifier
+        registerdeletion(Oldest_document);
         Oldest_document.delete()
         Pieces_oldest_documents = Piece.objects.filter(documentidentifier__exact = identifier)
         Pieces_oldest_documents.delete()
@@ -81,14 +117,9 @@ def listofprojects(request):
                     template = loader.get_template('infomessage.html')
                     context = {'message': 'Format not allowed! Please use JPG or PNG'}
                     return HttpResponse(template.render(context, request))
-            #folder = "folder size:" + folder_size()
-            #return HttpResponse(folder)#debuging
+
+            check_limit_storage() #check if there is enough available storage
             
-            #check_limit_storage() #check if there is enough available storage
-            
-            
-            #if Image.open(newdoc.docfile).size > 2097152:
-            #    return HttpResponse(Image.open(newdoc.docfile).size)
             if form.check_file_size() == "false":
                 template = loader.get_template('infomessage.html')
                 context = {'message': 'The size of the image should be less than 2 Mb'}
@@ -134,7 +165,6 @@ def listofprojects(request):
         else:
             id_user = request.COOKIES['user']
 
-        #esto estaba por encima del if inmediatamenta anterior
         form = DocumentForm()  # A empty, unbound form
 
         documents = Document.objects.filter(owner__exact=id_user) #primero leemos para eliminar viejos
@@ -333,7 +363,7 @@ def givemepiece(request):
             piece.state = 'given'
             piece.owner = request.COOKIES['user'] #we add the identifier
         
-        #check_limit_storage() #comprobar que hay espacio
+        check_limit_storage() #comprobar que hay espacio
         
         image = object.docfile
         im = Image.open(image)
@@ -574,8 +604,10 @@ def updatemosaic(id):
 	
 	return "0"
 
-
-
+def faq(request): #debug of conf.html
+	template = loader.get_template('faq.html')
+	context = {}
+	return HttpResponse(template.render(context, request))
 
 
 def pruebaconfig(request): #debug of conf.html

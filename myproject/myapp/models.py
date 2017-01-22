@@ -5,6 +5,20 @@ from django.utils import timezone
 from django.utils.timesince import timesince
 from django.utils.safestring import mark_safe
 
+class Deletion(models.Model):
+    identifier = models.CharField(default="null", max_length=15)
+    owner = models.CharField(null=True, max_length=30)
+    number_of_pieces = models.CharField(null=True, max_length=5)
+    created_date = models.DateTimeField(null=True, blank=True)
+    deletion_date = models.DateTimeField(null=True, blank=True)
+    pieces_given = models.CharField(null=True, max_length=10)
+    pieces_accepted = models.CharField(null=True, max_length=10)
+    pieces_submited = models.CharField(null=True, max_length=10)
+    pieces_unused = models.CharField(null=True, max_length=10)
+    time_of_life = models.CharField(null=True, max_length=10)
+
+
+
 class Piece(models.Model):
     image = models.ImageField(upload_to='pieces/%Y/%m/%d', width_field='width', height_field='height')
     state = models.CharField(default="null", max_length=30)
@@ -19,6 +33,7 @@ class Piece(models.Model):
     owner = models.CharField(null=True, max_length=30)
     given_date = models.DateTimeField(null=True, blank=True)
     ip = models.CharField(null=True, max_length=30)
+
 
     def admin_thumbnail_piece(self):
         if self.image:

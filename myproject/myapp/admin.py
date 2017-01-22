@@ -1,6 +1,7 @@
 from django.contrib import admin
 from myproject.myapp.models import Document 
 from myproject.myapp.models import Piece
+from myproject.myapp.models import Deletion
 from myproject.myapp.models import Banned 
 from django.utils.safestring import mark_safe
 from django.conf import settings
@@ -8,11 +9,25 @@ from django.conf import settings
 
 #admin.site.register(Piece)
 
+#admin.site.register(Deletion)
+
 # Register your models here.
 
 fields = ( 'admin_thumbnail')
 readonly_fields = ['admin_thumbnail']
 
+class DeletionAdmin(admin.ModelAdmin):
+    models = Deletion
+    
+    list_display = [ 'identifier', 'owner', 'number_of_pieces', 'created_date', 'deletion_date', 'time_of_life', 'pieces_given', 'pieces_accepted', 'pieces_submited', 'pieces_unused']
+    
+    search_fields = ('identifier', 'owner', 'created_date')
+    
+    def get_date(self, obj):
+        return obj.deletion_date
+
+    get_date.admin_order_field  = 'deletion_date'  #Allows column order sorting
+    #get_date.short_description = 'Creation date'  #Renames column head
 
 
 class DocumentAdmin(admin.ModelAdmin):
@@ -52,3 +67,4 @@ class BannedAdmin(admin.ModelAdmin):
 admin.site.register(Document, DocumentAdmin)
 admin.site.register(Piece, PieceAdmin)
 admin.site.register(Banned, BannedAdmin)
+admin.site.register(Deletion, DeletionAdmin)

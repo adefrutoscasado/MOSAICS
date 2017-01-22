@@ -18,6 +18,7 @@ urlpatterns = (
     #url(r'^pruebaconfig/$', myapp_views.pruebaconfig, name='pruebaconfig'), #debug config.html
     #url(r'^pruebamessage/$', myapp_views.pruebainfomessage, name='pruebainfomessage'), #debug infomessage.html
     url(r'^/list/$', myapp_views.listofprojects, name='list'),
+    url(r'^/FAQ/$', myapp_views.faq, name='faq'),
     url(r'^/(?P<thread_id>[0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM]+)/', myapp_views.thread, name='thread')
 
 )
