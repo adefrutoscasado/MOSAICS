@@ -296,17 +296,26 @@ margin-left: 100px;
     <h4 class="header" style="padding-top: 30px;">CREATE A NEW PROJECT</h4>
         <!-- Upload form. Note enctype attribute! -->
 
+    <blockquote>
+      <i class="material-icons" style="padding-right: 15px;padding-top: 0px;">publish</i><span style="font-size: 20px;font-weight: 300;">Upload an image (Only JPG and PNG are allowed)
+    </blockquote>
+
         <form action="{% url "list" %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            <p>{{ form.non_field_errors }}</p>
-            <p>{{ form.docfile.label_tag }} {{ form.docfile.help_text }}</p>
-            <p>
+            {{ form.non_field_errors }}
+            {{ form.docfile.label_tag }} {{ form.docfile.help_text }}
+            
                 {{ form.docfile.errors }}
                 {{ form.docfile }}
 		<br>
-	          <div class="input-field col s12 divcaptcha" style="white-space:nowrap; display:inline">
+
+    <blockquote>
+      <i class="material-icons" style="padding-right: 15px;padding-top: 0px;">face</i><span style="font-size: 20px;font-weight: 300;">Are you a human?
+    </blockquote>
+
+	          <div class="input-field col s12 divcaptcha" style="white-space:nowrap; display:inline; padding-left:6em">
                 {{ form.captcha }}
-		<label for="id_captcha_1">Captcha</label>
+		<label style="padding-left:6em" for="id_captcha_1">Captcha</label>
 
             </p>
 	    <div></div>
@@ -326,10 +335,10 @@ margin-left: 100px;
                 <p class="grey-text text-lighten-4"></p>
               </div>
               <div class="col l4 offset-l2 s12">
-                <h5 class="white-text">HELP</h5>
+<!--                 <h5 class="white-text">HELP</h5>
                 <ul>
                   <li><a class="grey-text text-lighten-3" href="/project/FAQ">FAQ</a></li>
-                </ul>
+                </ul> -->
               </div>
             </div>
           </div>

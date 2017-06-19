@@ -476,6 +476,9 @@ def administrate(request):
             banipfromsubmited_list = request.POST.getlist('banipfromsubmited')
             allowagain_list =  request.POST.getlist('allowagain')
             
+            newacceptedpieces = False;
+            newacceptedpiecedocumentidentifier = None;
+
             for piece_id in liberate_list:
                 piece = Piece.objects.get(identifier__exact=piece_id)
                 piece.delete()
@@ -488,7 +491,8 @@ def administrate(request):
                 updatepiece = Piece.objects.get(identifier__exact=piece_id)
                 updatepiece.state = "accepted"
                 updatepiece.save()
-                #updatemosaic(updatepiece.documentidentifier)
+                newacceptedpieces = True
+                newacceptedpiecedocumentidentifier = updatepiece.documentidentifier
 
             for piece_id in reject_list:
                 piece = Piece.objects.get(identifier__exact=piece_id)
@@ -521,8 +525,8 @@ def administrate(request):
                 allowagain = Banned.objects.get(identifier__exact=allowagain)
                 allowagain.delete()
 
-            if len(accept_list)>0: #Si se ha aceptado alguna pieza, significa que hay nuevas piezas para nuestro mosaico, por lo tanto lo actualizamos
-                updatemosaic(piece.documentidentifier)
+            if newacceptedpieces: #Si se ha aceptado alguna pieza, significa que hay nuevas piezas para nuestro mosaico, por lo tanto lo actualizamos
+                updatemosaic(newacceptedpiecedocumentidentifier)
             
             template = loader.get_template('infomessage.html')
             context = {'message': 'Changes saved!'}
