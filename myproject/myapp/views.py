@@ -86,11 +86,12 @@ def folder_size(path):
 
 
 def check_limit_storage():
-    limit_to_start_removing = 2097152 #around 2 mb, debug
-    #limit_to_start_removing = 419430400 #400 mb
+    #limit_to_start_removing = 2097152 #around 2 mb, debug
+    limit_to_start_removing = 419430400 #400 mb
     
-    #path = "/home/adefrutoscasado/MOSAICS/media" #para Linux/web
-    path = "media" #para local
+    path = "/home/alejandro/Desktop/mosaics/MOSAICS/media" #for local Linux
+    #path = "/home/adefrutoscasado/MOSAICS/media" #para pythonanywhere
+    #path = "media" #for windows
     
     used_storage = folder_size(path)
     if int(str(used_storage)) > int(str(limit_to_start_removing)):
