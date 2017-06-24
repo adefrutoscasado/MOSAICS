@@ -487,6 +487,8 @@ def administrate(request):
             for piece_id in liberatefromaccepted_list:
                 piece = Piece.objects.get(identifier__exact=piece_id)
                 piece.delete()
+                newacceptedpieces = True #if we reject an accepted piece, we have to create again the mosaic
+                newacceptedpiecedocumentidentifier = piece.documentidentifier
 
             for piece_id in accept_list:
                 updatepiece = Piece.objects.get(identifier__exact=piece_id)
